@@ -1,0 +1,114 @@
+{
+  "condition": "topp_0.90",
+  "clap_model": "laion/larger_clap_music_and_speech",
+  "n": 15,
+  "mean_clap_similarity": 0.4223764697710673,
+  "std_clap_similarity": 0.16535657150212515,
+  "per_item": [
+    {
+      "audio_path": "results\\sweep_ultrakill\\topp_0.90\\gen_000_000.wav",
+      "prompt": "frantic, industrial breakcore, machine-gun breakbeat drums, distorted bass, ULTRAKILL OST, Heaven Pierce Her",
+      "prompt_idx": 0,
+      "sample_idx": 0,
+      "clap_similarity": 0.4903716742992401
+    },
+    {
+      "audio_path": "results\\sweep_ultrakill\\topp_0.90\\gen_000_001.wav",
+      "prompt": "frantic, industrial breakcore, machine-gun breakbeat drums, distorted bass, ULTRAKILL OST, Heaven Pierce Her",
+      "prompt_idx": 0,
+      "sample_idx": 1,
+      "clap_similarity": 0.5489963889122009
+    },
+    {
+      "audio_path": "results\\sweep_ultrakill\\topp_0.90\\gen_000_002.wav",
+      "prompt": "frantic, industrial breakcore, machine-gun breakbeat drums, distorted bass, ULTRAKILL OST, Heaven Pierce Her",
+      "prompt_idx": 0,
+      "sample_idx": 2,
+      "clap_similarity": 0.4321056604385376
+    },
+    {
+      "audio_path": "results\\sweep_ultrakill\\topp_0.90\\gen_001_000.wav",
+      "prompt": "menacing, oppressive, boss battle music, industrial metal, slow thunderous drums, dramatic escalation, ULTRAKILL OST, Heaven Pierce Her",
+      "prompt_idx": 1,
+      "sample_idx": 0,
+      "clap_similarity": 0.44960251450538635
+    },
+    {
+      "audio_path": "results\\sweep_ultrakill\\topp_0.90\\gen_001_001.wav",
+      "prompt": "menacing, oppressive, boss battle music, industrial metal, slow thunderous drums, dramatic escalation, ULTRAKILL OST, Heaven Pierce Her",
+      "prompt_idx": 1,
+      "sample_idx": 1,
+      "clap_similarity": 0.47358688712120056
+    },
+    {
+      "audio_path": "results\\sweep_ultrakill\\topp_0.90\\gen_001_002.wav",
+      "prompt": "menacing, oppressive, boss battle music, industrial metal, slow thunderous drums, dramatic escalation, ULTRAKILL OST, Heaven Pierce Her",
+      "prompt_idx": 1,
+      "sample_idx": 2,
+      "clap_similarity": 0.5328603982925415
+    },
+    {
+      "audio_path": "results\\sweep_ultrakill\\topp_0.90\\gen_002_000.wav",
+      "prompt": "triumphant, euphoric, climactic, shredding guitar leads, jungle break drums, ULTRAKILL OST, Heaven Pierce Her",
+      "prompt_idx": 2,
+      "sample_idx": 0,
+      "clap_similarity": 0.37630385160446167
+    },
+    {
+      "audio_path": "results\\sweep_ultrakill\\topp_0.90\\gen_002_001.wav",
+      "prompt": "triumphant, euphoric, climactic, shredding guitar leads, jungle break drums, ULTRAKILL OST, Heaven Pierce Her",
+      "prompt_idx": 2,
+      "sample_idx": 1,
+      "clap_similarity": 0.25944820046424866
+    },
+    {
+      "audio_path": "results\\sweep_ultrakill\\topp_0.90\\gen_002_002.wav",
+      "prompt": "triumphant, euphoric, climactic, shredding guitar leads, jungle break drums, ULTRAKILL OST, Heaven Pierce Her",
+      "prompt_idx": 2,
+      "sample_idx": 2,
+      "clap_similarity": 0.5186948776245117
+    },
+    {
+      "audio_path": "results\\sweep_ultrakill\\topp_0.90\\gen_003_000.wav",
+      "prompt": "melancholic slow piano melody, sparse and desolate, cold atmosphere, heavy reverb, ULTRAKILL OST, Heaven Pierce Her",
+      "prompt_idx": 3,
+      "sample_idx": 0,
+      "clap_similarity": 0.2153632491827011
+    },
+    {
+      "audio_path": "results\\sweep_ultrakill\\topp_0.90\\gen_003_001.wav",
+      "prompt": "melancholic slow piano melody, sparse and desolate, cold atmosphere, heavy reverb, ULTRAKILL OST, Heaven Pierce Her",
+      "prompt_idx": 3,
+      "sample_idx": 1,
+      "clap_similarity": 0.05622608959674835
+    },
+    {
+      "audio_path": "results\\sweep_ultrakill\\topp_0.90\\gen_003_002.wav",
+      "prompt": "melancholic slow piano melody, sparse and desolate, cold atmosphere, heavy reverb, ULTRAKILL OST, Heaven Pierce Her",
+      "prompt_idx": 3,
+      "sample_idx": 2,
+      "clap_similarity": 0.17769378423690796
+    },
+    {
+      "audio_path": "results\\sweep_ultrakill\\topp_0.90\\gen_004_000.wav",
+      "prompt": "relentless, frenetic, electronic breakcore, synth-drenched, machine-gun breakbeat drums, ULTRAKILL OST, Heaven Pierce Her",
+      "prompt_idx": 4,
+      "sample_idx": 0,
+      "clap_similarity": 0.6207801103591919
+    },
+    {
+      "audio_path": "results\\sweep_ultrakill\\topp_0.90\\gen_004_001.wav",
+      "prompt": "relentless, frenetic, electronic breakcore, synth-drenched, machine-gun breakbeat drums, ULTRAKILL OST, Heaven Pierce Her",
+      "prompt_idx": 4,
+      "sample_idx": 1,
+      "clap_similarity": 0.6257767677307129
+    },
+    {
+      "audio_path": "results\\sweep_ultrakill\\topp_0.90\\gen_004_002.wav",
+      "prompt": "relentless, frenetic, electronic breakcore, synth-drenched, machine-gun breakbeat drums, ULTRAKILL OST, Heaven Pierce Her",
+      "prompt_idx": 4,
+      "sample_idx": 2,
+      "clap_similarity": 0.5578365921974182
+    }
+  ]
+}

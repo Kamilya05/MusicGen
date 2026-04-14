@@ -1,0 +1,7 @@
+{
+  "fad_score": 5.963002601633519,
+  "background_dir": "data\\ultrakill",
+  "eval_dir": "results\\sweep_ultrakill\\topk_50",
+  "model_name": "vggish",
+  "sample_rate": 16000
+}

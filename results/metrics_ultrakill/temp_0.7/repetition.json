@@ -1,0 +1,137 @@
+{
+  "condition_dir": "results\\sweep_ultrakill\\temp_0.7",
+  "n_files": 15,
+  "mean_repetition_score": 0.9894107262293498,
+  "std_repetition_score": 0.00544727988573866,
+  "mean_loop_ratio": 1.0,
+  "diversity": {
+    "diversity_score": 224.6285982041132,
+    "diversity_std": 103.4813938009366,
+    "n_pairs": 105,
+    "n_samples": 15
+  },
+  "per_prompt_diversity": {
+    "0": {
+      "diversity_score": 109.27118174235027,
+      "diversity_std": 24.284605872536368,
+      "n_pairs": 3,
+      "n_samples": 3
+    },
+    "1": {
+      "diversity_score": 275.7378438313802,
+      "diversity_std": 97.22657290427183,
+      "n_pairs": 3,
+      "n_samples": 3
+    },
+    "2": {
+      "diversity_score": 214.45806884765625,
+      "diversity_std": 39.349967413453705,
+      "n_pairs": 3,
+      "n_samples": 3
+    },
+    "3": {
+      "diversity_score": 83.15705108642578,
+      "diversity_std": 10.460714941658525,
+      "n_pairs": 3,
+      "n_samples": 3
+    },
+    "4": {
+      "diversity_score": 117.61837514241536,
+      "diversity_std": 19.993790177936894,
+      "n_pairs": 3,
+      "n_samples": 3
+    }
+  },
+  "per_file": [
+    {
+      "repetition_score": 0.9945985078811646,
+      "loop_ratio": 1.0,
+      "n_frames": 431,
+      "audio_path": "results\\sweep_ultrakill\\temp_0.7\\gen_000_000.wav"
+    },
+    {
+      "repetition_score": 0.9883244633674622,
+      "loop_ratio": 1.0,
+      "n_frames": 431,
+      "audio_path": "results\\sweep_ultrakill\\temp_0.7\\gen_000_001.wav"
+    },
+    {
+      "repetition_score": 0.9883541464805603,
+      "loop_ratio": 1.0,
+      "n_frames": 431,
+      "audio_path": "results\\sweep_ultrakill\\temp_0.7\\gen_000_002.wav"
+    },
+    {
+      "repetition_score": 0.9752093553543091,
+      "loop_ratio": 1.0,
+      "n_frames": 431,
+      "audio_path": "results\\sweep_ultrakill\\temp_0.7\\gen_001_000.wav"
+    },
+    {
+      "repetition_score": 0.9890158772468567,
+      "loop_ratio": 1.0,
+      "n_frames": 431,
+      "audio_path": "results\\sweep_ultrakill\\temp_0.7\\gen_001_001.wav"
+    },
+    {
+      "repetition_score": 0.9822231531143188,
+      "loop_ratio": 1.0,
+      "n_frames": 431,
+      "audio_path": "results\\sweep_ultrakill\\temp_0.7\\gen_001_002.wav"
+    },
+    {
+      "repetition_score": 0.9882733821868896,
+      "loop_ratio": 1.0,
+      "n_frames": 431,
+      "audio_path": "results\\sweep_ultrakill\\temp_0.7\\gen_002_000.wav"
+    },
+    {
+      "repetition_score": 0.9926223754882812,
+      "loop_ratio": 1.0,
+      "n_frames": 431,
+      "audio_path": "results\\sweep_ultrakill\\temp_0.7\\gen_002_001.wav"
+    },
+    {
+      "repetition_score": 0.9939754605293274,
+      "loop_ratio": 1.0,
+      "n_frames": 431,
+      "audio_path": "results\\sweep_ultrakill\\temp_0.7\\gen_002_002.wav"
+    },
+    {
+      "repetition_score": 0.9923219084739685,
+      "loop_ratio": 1.0,
+      "n_frames": 431,
+      "audio_path": "results\\sweep_ultrakill\\temp_0.7\\gen_003_000.wav"
+    },
+    {
+      "repetition_score": 0.9844958782196045,
+      "loop_ratio": 1.0,
+      "n_frames": 431,
+      "audio_path": "results\\sweep_ultrakill\\temp_0.7\\gen_003_001.wav"
+    },
+    {
+      "repetition_score": 0.9972392320632935,
+      "loop_ratio": 1.0,
+      "n_frames": 431,
+      "audio_path": "results\\sweep_ultrakill\\temp_0.7\\gen_003_002.wav"
+    },
+    {
+      "repetition_score": 0.9882418513298035,
+      "loop_ratio": 1.0,
+      "n_frames": 431,
+      "audio_path": "results\\sweep_ultrakill\\temp_0.7\\gen_004_000.wav"
+    },
+    {
+      "repetition_score": 0.9912679195404053,
+      "loop_ratio": 1.0,
+      "n_frames": 431,
+      "audio_path": "results\\sweep_ultrakill\\temp_0.7\\gen_004_001.wav"
+    },
+    {
+      "repetition_score": 0.9949973821640015,
+      "loop_ratio": 1.0,
+      "n_frames": 431,
+      "audio_path": "results\\sweep_ultrakill\\temp_0.7\\gen_004_002.wav"
+    }
+  ]
+}

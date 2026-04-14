@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MusicGen — Pairwise Listening Study</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f4f5f7; color: #1a1a2e; min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  header {
+    width: 100%; background: #1a1a2e; color: #fff;
+    padding: 16px 24px; display: flex; align-items: center; gap: 16px;
+  }
+  header h1 { font-size: 1.1rem; font-weight: 600; }
+  #progress-bar-wrap {
+    flex: 1; height: 8px; background: #333; border-radius: 4px; overflow: hidden;
+  }
+  #progress-bar { height: 100%; background: #4fc3f7; transition: width .3s; }
+  #progress-label { font-size: 0.85rem; color: #aaa; white-space: nowrap; }
+
+  main { width: 100%; max-width: 860px; padding: 28px 20px; }
+
+  /* ── Setup screen ── */
+  #setup-screen {
+    background: #fff; border-radius: 12px; padding: 36px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.08);
+  }
+  #setup-screen h2 { font-size: 1.4rem; margin-bottom: 12px; }
+  #setup-screen p  { color: #555; line-height: 1.6; margin-bottom: 20px; }
+  .field-label { font-weight: 600; font-size: .9rem; margin-bottom: 4px; }
+  .field-input {
+    width: 100%; padding: 10px 14px; border: 1.5px solid #d0d3e0;
+    border-radius: 8px; font-size: .95rem; outline: none; margin-bottom: 16px;
+  }
+  .field-input:focus { border-color: #4fc3f7; }
+
+  /* ── Task card ── */
+  #task-screen { display: none; }
+  .card {
+    background: #fff; border-radius: 12px; padding: 28px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.08); margin-bottom: 20px;
+  }
+  .prompt-box {
+    background: #eef6fd; border-left: 4px solid #4fc3f7;
+    padding: 14px 18px; border-radius: 0 8px 8px 0; margin-bottom: 24px;
+  }
+  .prompt-box .label { font-size: .75rem; color: #4a90d9; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase; margin-bottom: 4px; }
+  .prompt-box .text  { font-size: 1.05rem; font-weight: 600; color: #1a1a2e; }
+
+  .clips-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .clip-card {
+    border: 2px solid #e0e3ea; border-radius: 10px; padding: 16px; text-align: center;
+  }
+  .clip-label {
+    display: inline-block; background: #1a1a2e; color: #fff;
+    font-size: 1.1rem; font-weight: 700; width: 36px; height: 36px;
+    line-height: 36px; border-radius: 50%; margin-bottom: 12px;
+  }
+  .clip-card audio { width: 100%; margin-top: 6px; }
+
+  /* ── Question blocks ── */
+  .question-block { margin-top: 22px; }
+  .question-block .q-text {
+    font-weight: 600; font-size: 1rem; margin-bottom: 12px; color: #1a1a2e;
+  }
+  .q-options { display: flex; gap: 10px; }
+  .q-btn {
+    flex: 1; padding: 12px; border: 2px solid #d0d3e0; border-radius: 8px;
+    background: #fff; font-size: .95rem; font-weight: 500; cursor: pointer;
+    transition: all .15s;
+  }
+  .q-btn:hover { border-color: #4fc3f7; background: #f0faff; }
+  .q-btn.selected { border-color: #1a1a2e; background: #1a1a2e; color: #fff; }
+
+  /* ── Navigation ── */
+  .nav-row { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; }
+  .btn {
+    padding: 12px 28px; border-radius: 8px; font-size: .95rem;
+    font-weight: 600; cursor: pointer; border: none; transition: all .15s;
+  }
+  .btn-primary { background: #1a1a2e; color: #fff; }
+  .btn-primary:hover { background: #2e3157; }
+  .btn-primary:disabled { background: #b0b3c0; cursor: not-allowed; }
+
+  /* ── Summary screen ── */
+  #summary-screen {
+    display: none; background: #fff; border-radius: 12px; padding: 36px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.08);
+  }
+  #summary-screen h2 { font-size: 1.5rem; margin-bottom: 16px; }
+  .summary-table {
+    width: 100%; border-collapse: collapse; font-size: .9rem; margin-bottom: 24px;
+  }
+  .summary-table th { background: #f0f1f5; padding: 10px; text-align: left; }
+  .summary-table td { padding: 10px; border-top: 1px solid #e0e3ea; }
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 12px;
+    font-size: .8rem; font-weight: 600;
+  }
+  .badge-a   { background: #dbeafe; color: #1d4ed8; }
+  .badge-b   { background: #fce7f3; color: #be185d; }
+  .badge-tie { background: #e2e8f0; color: #475569; }
+  .btn-export { background: #059669; color: #fff; }
+  .btn-export:hover { background: #047857; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>MusicGen Pairwise Listening Study</h1>
+  <div id="progress-bar-wrap"><div id="progress-bar" style="width:0%"></div></div>
+  <span id="progress-label">0 / 0</span>
+</header>
+
+<main>
+
+<!-- ── Setup screen ─────────────────────────────────────── -->
+<div id="setup-screen">
+  <h2>Study Setup</h2>
+  <p>
+    You will listen to pairs of 30-second audio clips and answer two questions
+    for each pair. There are no right or wrong answers — we want your honest
+    perception.<br><br>
+    Listen to <strong>both clips</strong> before answering.
+    You may replay clips as many times as needed.
+  </p>
+
+  <div class="field-label">pairs.json path (relative to server root)</div>
+  <input class="field-input" id="pairs-path"
+         value="results/human_study/pairs.json"
+         placeholder="results/human_study/pairs.json">
+
+  <div class="field-label">Audio base URL (leave blank for same server root)</div>
+  <input class="field-input" id="audio-base" value="/"
+         placeholder="e.g.  /  or  http://localhost:8080/">
+
+  <div style="background:#fffbeb;border:1px solid #fcd34d;padding:12px 16px;
+              border-radius:8px;font-size:.9rem;margin-bottom:20px;color:#78350f;">
+    <strong>Tip:</strong> Serve from the project root:<br>
+    <code>python -m http.server 8080</code><br>
+    then open <code>http://localhost:8080/src/human_study/viewer.html</code>
+  </div>
+
+  <button class="btn btn-primary" onclick="loadStudy()">Load Study →</button>
+</div>
+
+<!-- ── Task screen ──────────────────────────────────────── -->
+<div id="task-screen">
+  <div class="card">
+    <div class="prompt-box">
+      <div class="label">Text Prompt</div>
+      <div class="text" id="prompt-text"></div>
+    </div>
+
+    <div class="clips-row">
+      <div class="clip-card">
+        <div class="clip-label">A</div>
+        <audio id="audio-a" controls preload="auto"></audio>
+      </div>
+      <div class="clip-card">
+        <div class="clip-label">B</div>
+        <audio id="audio-b" controls preload="auto"></audio>
+      </div>
+    </div>
+
+    <!-- Q1 -->
+    <div class="question-block">
+      <div class="q-text">Q1 — Which clip sounds <em>better overall</em>?</div>
+      <div class="q-options">
+        <button class="q-btn" id="q1-A"   onclick="answer('q1','A')">Clip A</button>
+        <button class="q-btn" id="q1-tie" onclick="answer('q1','tie')">Tie / Can't tell</button>
+        <button class="q-btn" id="q1-B"   onclick="answer('q1','B')">Clip B</button>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="question-block">
+      <div class="q-text">Q2 — Which clip <em>matches the prompt better</em>?</div>
+      <div class="q-options">
+        <button class="q-btn" id="q2-A"   onclick="answer('q2','A')">Clip A</button>
+        <button class="q-btn" id="q2-tie" onclick="answer('q2','tie')">Tie / Can't tell</button>
+        <button class="q-btn" id="q2-B"   onclick="answer('q2','B')">Clip B</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn btn-primary" id="next-btn" disabled onclick="nextTask()">
+      Next →
+    </button>
+  </div>
+</div>
+
+<!-- ── Summary screen ───────────────────────────────────── -->
+<div id="summary-screen">
+  <h2>Study Complete — Thank you!</h2>
+  <p style="margin-bottom:20px;color:#555;">
+    Your responses are shown below. Download them as CSV for analysis.
+  </p>
+  <table class="summary-table" id="summary-table">
+    <thead>
+      <tr>
+        <th>#</th><th>Prompt</th><th>Condition A</th><th>Condition B</th>
+        <th>Q1 Overall</th><th>Q2 Prompt match</th>
+      </tr>
+    </thead>
+    <tbody id="summary-body"></tbody>
+  </table>
+  <div class="nav-row">
+    <button class="btn btn-export btn-primary" onclick="exportCSV()">
+      ⬇ Download CSV
+    </button>
+  </div>
+</div>
+
+</main>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+let tasks     = [];
+let current   = 0;
+let responses = [];  // {task_id, prompt, condition_a, condition_b, q1, q2}
+let audioBase = "/";
+
+// Current task answers
+let answers = { q1: null, q2: null };
+
+// ── Load study ─────────────────────────────────────────────────────────────
+async function loadStudy() {
+  const pairsPath = document.getElementById("pairs-path").value.trim();
+  audioBase = document.getElementById("audio-base").value.trim();
+  if (!audioBase.endsWith("/")) audioBase += "/";
+
+  try {
+    const resp = await fetch(pairsPath);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status} — ${resp.statusText}`);
+    const data = await resp.json();
+    tasks = data.tasks || [];
+    if (!tasks.length) { alert("pairs.json has no tasks."); return; }
+    document.getElementById("setup-screen").style.display = "none";
+    document.getElementById("task-screen").style.display  = "block";
+    showTask(0);
+  } catch (e) {
+    alert(
+      `Could not load pairs.json:\n${e.message}\n\n` +
+      `Make sure the server is running:\n  python -m http.server 8080\n` +
+      `Then access via http://localhost:8080/src/human_study/viewer.html`
+    );
+  }
+}
+
+// ── Show task ──────────────────────────────────────────────────────────────
+function showTask(idx) {
+  current = idx;
+  answers = { q1: null, q2: null };
+  clearButtons();
+  document.getElementById("next-btn").disabled = true;
+
+  const task = tasks[idx];
+  document.getElementById("prompt-text").textContent = task.prompt;
+
+  const base = audioBase.startsWith("http") ? audioBase
+               : window.location.origin + "/" + audioBase.replace(/^\//, "");
+
+  document.getElementById("audio-a").src =
+    base.replace(/\/$/, "") + "/" + task.clip_a.path.replace(/^\//, "").replace(/\\/g, "/");
+  document.getElementById("audio-b").src =
+    base.replace(/\/$/, "") + "/" + task.clip_b.path.replace(/^\//, "").replace(/\\/g, "/");
+
+  updateProgress();
+}
+
+// ── Answer ─────────────────────────────────────────────────────────────────
+function answer(q, value) {
+  answers[q] = value;
+  // Highlight selected button
+  ["A", "tie", "B"].forEach(v => {
+    const btn = document.getElementById(`${q}-${v}`);
+    btn.classList.toggle("selected", v === value);
+  });
+  // Enable Next when both questions answered
+  if (answers.q1 && answers.q2) {
+    document.getElementById("next-btn").disabled = false;
+  }
+}
+
+function clearButtons() {
+  ["q1","q2"].forEach(q =>
+    ["A","tie","B"].forEach(v =>
+      document.getElementById(`${q}-${v}`).classList.remove("selected")
+    )
+  );
+}
+
+// ── Next task ──────────────────────────────────────────────────────────────
+function nextTask() {
+  const task = tasks[current];
+  responses.push({
+    task_id:     task.task_id,
+    prompt:      task.prompt,
+    prompt_idx:  task.prompt_idx,
+    condition_a: task.clip_a.condition,
+    condition_b: task.clip_b.condition,
+    q1_overall:     answers.q1,
+    q2_prompt_match: answers.q2,
+  });
+
+  if (current + 1 < tasks.length) {
+    showTask(current + 1);
+  } else {
+    showSummary();
+  }
+}
+
+// ── Progress ───────────────────────────────────────────────────────────────
+function updateProgress() {
+  const pct = tasks.length ? ((current / tasks.length) * 100).toFixed(0) : 0;
+  document.getElementById("progress-bar").style.width = pct + "%";
+  document.getElementById("progress-label").textContent =
+    `${current + 1} / ${tasks.length}`;
+}
+
+// ── Summary ────────────────────────────────────────────────────────────────
+function showSummary() {
+  document.getElementById("task-screen").style.display    = "none";
+  document.getElementById("summary-screen").style.display = "block";
+  document.getElementById("progress-bar").style.width     = "100%";
+  document.getElementById("progress-label").textContent   =
+    `${tasks.length} / ${tasks.length}`;
+
+  const tbody = document.getElementById("summary-body");
+  tbody.innerHTML = "";
+  responses.forEach((r, i) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${i + 1}</td>
+      <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;
+                 white-space:nowrap;" title="${r.prompt}">${r.prompt}</td>
+      <td><code>${r.condition_a}</code></td>
+      <td><code>${r.condition_b}</code></td>
+      <td>${badge(r.q1_overall)}</td>
+      <td>${badge(r.q2_prompt_match)}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function badge(v) {
+  if (!v) return "—";
+  const cls = v === "A" ? "badge-a" : v === "B" ? "badge-b" : "badge-tie";
+  return `<span class="badge ${cls}">${v === "tie" ? "Tie" : "Clip " + v}</span>`;
+}
+
+// ── CSV export ─────────────────────────────────────────────────────────────
+function exportCSV() {
+  const header = [
+    "task_id","prompt_idx","prompt",
+    "condition_a","condition_b",
+    "q1_overall","q2_prompt_match"
+  ];
+  const rows = responses.map(r =>
+    header.map(k => JSON.stringify(r[k] ?? "")).join(",")
+  );
+  const csv = [header.join(","), ...rows].join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `human_study_results_${new Date().toISOString().slice(0,19).replace(/:/g,"-")}.csv`;
+  a.click();
+}
+
+// ── Allow Enter / Space on selected answer to advance ─────────────────────
+document.addEventListener("keydown", e => {
+  if ((e.key === "Enter" || e.key === " ") &&
+      !document.getElementById("next-btn").disabled &&
+      document.getElementById("task-screen").style.display !== "none") {
+    e.preventDefault();
+    nextTask();
+  }
+});
+</script>
+</body>
+</html>
