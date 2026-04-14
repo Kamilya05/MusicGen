@@ -7,9 +7,13 @@ audio. Uses VGGish embeddings by default (matches original Google FAD paper).
 
 import argparse
 import json
+import shutil
+import tempfile
 from pathlib import Path
 
 from frechet_audio_distance import FrechetAudioDistance
+
+AUDIO_EXTENSIONS = {".wav", ".flac", ".mp3", ".ogg", ".m4a"}
 
 
 def compute_fad(
@@ -38,18 +42,31 @@ def compute_fad(
         raise FileNotFoundError(f"Background dir not found: {background_dir}")
     if not eval_dir.exists():
         raise FileNotFoundError(f"Eval dir not found: {eval_dir}")
-    frechet = FrechetAudioDistance(
-        model_name=model_name,
-        sample_rate=sample_rate,
-        use_pca=False,
-        use_activation=False,
-        verbose=True,
-    )
-    fad_score = frechet.score(
-        str(background_dir),
-        str(eval_dir),
-        dtype="float32",
-    )
+
+    # FAD scans directories indiscriminately — stage only audio files in a
+    # temp directory so stray .txt / .jsonl files don't cause errors.
+    tmp = tempfile.mkdtemp()
+    try:
+        tmp_bg = Path(tmp) / "background"
+        tmp_bg.mkdir()
+        for f in background_dir.iterdir():
+            if f.suffix.lower() in AUDIO_EXTENSIONS:
+                shutil.copy2(f, tmp_bg / f.name)
+
+        frechet = FrechetAudioDistance(
+            model_name=model_name,
+            sample_rate=sample_rate,
+            use_pca=False,
+            use_activation=False,
+            verbose=True,
+        )
+        fad_score = frechet.score(
+            str(tmp_bg),
+            str(eval_dir),
+            dtype="float32",
+        )
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
     result = {
         "fad_score": float(fad_score),
         "background_dir": str(background_dir),

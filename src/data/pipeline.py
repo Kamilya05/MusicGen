@@ -148,19 +148,24 @@ def export_audio_to_disk(
     split_ratio: tuple[float, float, float] = (0.9, 0.05, 0.05),
     max_samples: Optional[int] = None,
     genre_filter: Optional[list[str]] = None,
+    audio_format: str = "flac",
 ) -> dict[str, Path]:
     """
     Export FMA audio to disk and create manifests with real paths.
 
-    Downloads dataset, saves audio as WAV, writes AudioCraft manifests.
+    Downloads dataset, saves audio as FLAC (default) or WAV, writes AudioCraft manifests.
     """
+    import io
     import soundfile as sf
+    from datasets import Audio
 
     output_dir = Path(output_dir)
     audio_base = output_dir / "audio"
     audio_base.mkdir(parents=True, exist_ok=True)
 
     dataset = load_fma_dataset(dataset_name=dataset_name)
+    # Avoid torchcodec dependency — get raw bytes and decode with soundfile
+    dataset = dataset.cast_column("audio", Audio(decode=False))
     n = len(dataset)
     if max_samples:
         n = min(n, max_samples)
@@ -192,18 +197,19 @@ def export_audio_to_disk(
                 try:
                     if i % 100 == 0:
                         print(f"Processing audio file {i}/{end}...")
-                    audio_data = audio.get_all_samples()
-                    audio_array = audio_data.data.numpy()
-                    audio_array = audio_array.T
-                    metadata = audio.metadata
-                    sample_rate = metadata.sample_rate
-                    audio_path = split_audio / f"{i}.wav"
-                    sf.write(audio_path, audio_array, sample_rate)
+                    audio_bytes = audio.get("bytes")
+                    if not audio_bytes:
+                        continue
+                    audio_array, sample_rate = sf.read(io.BytesIO(audio_bytes))
+                    audio_path = split_audio / f"{i}.{audio_format}"
+                    sf.write(str(audio_path), audio_array, sample_rate, format=audio_format.upper())
 
+                    genres = row.get("genres", [])
+                    genre_desc = get_genre_description(genres, GENRE_NAMES)
                     manifest_entry = {
                         "audio": str(audio_path),
-                        "text": row.get("text", ""),
-                        "genre": row.get("genre", ""),
+                        "text": genre_desc,
+                        "genre": genre_desc,
                     }
                     f.write(json.dumps(manifest_entry) + "\n")
 
@@ -211,6 +217,73 @@ def export_audio_to_disk(
                     print(f"Error processing audio at index {i}: {e}")
 
         manifest_paths[split_name] = manifest_path
+
+    return manifest_paths
+
+
+def fix_manifests(
+    output_dir: Path,
+    dataset_name: str = "benjamin-paine/free-music-archive-medium",
+    split_ratio: tuple[float, float, float] = (0.9, 0.05, 0.05),
+    max_samples: Optional[int] = None,
+) -> dict[str, Path]:
+    """
+    Re-generate manifests with correct genre/text from the cached dataset.
+
+    Does not re-download or re-encode audio — only rewrites the JSONL files.
+    Only entries whose WAV file already exists on disk are included.
+    """
+    output_dir = Path(output_dir)
+    audio_base = output_dir / "audio"
+
+    dataset = load_fma_dataset(dataset_name=dataset_name)
+    if "audio" in dataset.column_names:
+        dataset = dataset.remove_columns(["audio"])
+
+    n = len(dataset)
+    if max_samples:
+        n = min(n, max_samples)
+
+    train_ratio, valid_ratio, _ = split_ratio
+    n_train = int(n * train_ratio)
+    n_valid = int(n * valid_ratio)
+
+    splits = {
+        "train": (0, n_train),
+        "valid": (n_train, n_train + n_valid),
+        "test": (n_train + n_valid, n),
+    }
+
+    manifest_paths = {}
+    for split_name, (start, end) in splits.items():
+        split_audio = audio_base / split_name
+        manifest_path = output_dir / split_name / "data.jsonl"
+        (output_dir / split_name).mkdir(parents=True, exist_ok=True)
+
+        written = 0
+        with open(manifest_path, "w") as f:
+            for i in range(start, end):
+                # Prefer FLAC, fall back to WAV for older exports
+                audio_path = split_audio / f"{i}.flac"
+                if not audio_path.exists():
+                    audio_path = split_audio / f"{i}.wav"
+                if not audio_path.exists():
+                    continue
+
+                row = dataset[i]
+                genres = row.get("genres", [])
+                genre_desc = get_genre_description(genres, GENRE_NAMES)
+
+                manifest_entry = {
+                    "audio": str(audio_path),
+                    "text": genre_desc,
+                    "genre": genre_desc,
+                }
+                f.write(json.dumps(manifest_entry) + "\n")
+                written += 1
+
+        manifest_paths[split_name] = manifest_path
+        print(f"  {split_name}: {written} entries -> {manifest_path}")
 
     return manifest_paths
 
@@ -241,16 +314,41 @@ def main():
         action="store_true",
         help="Export audio to disk (requires significant storage)",
     )
+    parser.add_argument(
+        "--fix_manifests",
+        action="store_true",
+        help="Re-generate manifests with correct genre/text (no audio re-export)",
+    )
+    parser.add_argument(
+        "--format",
+        type=str,
+        default="flac",
+        choices=["flac", "wav"],
+        help="Audio format for export (default: flac, saves ~50-60%% vs wav)",
+    )
     args = parser.parse_args()
 
     split_ratio = tuple(args.split_ratio)
     output_dir = Path(args.output_dir)
+
+    if args.fix_manifests:
+        print("Re-generating manifests from existing audio...")
+        paths = fix_manifests(
+            output_dir=output_dir,
+            split_ratio=split_ratio,
+            max_samples=args.max_samples,
+        )
+        print("Done.")
+        for split, path in paths.items():
+            print(f"  {split}: {path}")
+        return
 
     if args.export_audio:
         paths = export_audio_to_disk(
             output_dir=output_dir,
             split_ratio=split_ratio,
             max_samples=args.max_samples,
+            audio_format=args.format,
         )
         print("Exported audio and created manifests:")
     else:

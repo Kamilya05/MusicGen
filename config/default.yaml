@@ -1,20 +1,73 @@
-# MusicGen Baseline Configuration
+# MusicGen — Decoding Study Configuration
 
 model:
   name: facebook/musicgen-small
   # Alternatives: facebook/musicgen-medium, facebook/musicgen-large
 
+# ── Baseline generation defaults ───────────────────────────────────────────────
 generation:
-  duration: 30.0  # seconds
-  temperature: 1.0  # baseline ancestral sampling
+  duration: 30.0
+  temperature: 1.0
   use_sampling: true
   top_k: 250
   top_p: 0.0
 
+# ── Experiment sweep ────────────────────────────────────────────────────────────
+# Controls src/run_experiments.py
+experiments:
+  default_group: all      # greedy | temp | topk | topp | all
+  duration: 30.0
+  num_samples: 5          # samples per prompt per condition
+  prompts_file: null      # path to JSONL, or null to use built-in defaults
+
+  # Temperature sweep — use_sampling=True, top_k=0, top_p=0
+  temperature_sweep:
+    temperatures: [0.5, 0.7, 0.9, 1.0, 1.2, 1.5]
+
+  # Top-k sweep — use_sampling=True, temperature=1.0, top_p=0
+  topk_sweep:
+    top_k_values: [50, 100, 250, 500]
+
+  # Top-p sweep — use_sampling=True, temperature=1.0, top_k=0
+  topp_sweep:
+    top_p_values: [0.85, 0.90, 0.95, 0.99]
+
+# ── Decoding audit ─────────────────────────────────────────────────────────────
+# Controls src/audit_decoding.py
+audit:
+  temperatures: [0.7, 0.9, 1.0, 1.2, 1.5]
+  duration: 10.0          # short for speed
+  prompt: "upbeat jazz piano music"
+
+# ── Dataset ────────────────────────────────────────────────────────────────────
 data:
   dataset: benjamin-paine/free-music-archive-medium
-  split_ratio: [0.9, 0.05, 0.05]  # train, valid, test
+  split_ratio: [0.9, 0.05, 0.05]  # train / valid / test
 
+# ── Evaluation ─────────────────────────────────────────────────────────────────
 evaluation:
-  fad_model: vggish  # vggish, pann, clap, encodec
-  sample_rate: 16000  # for VGGish; use 48000 for EnCodec
+  # FAD
+  fad_model: vggish         # vggish | pann | clap | encodec
+  sample_rate: 16000        # 16000 for vggish, 48000 for encodec
+
+  # CLAP prompt adherence
+  clap_model: laion/larger_clap_music_and_speech
+  clap_sample_rate: 48000
+
+  # Which metrics to run in evaluate_all.py
+  metrics:
+    - fad
+    - clap_similarity
+    - repetition_score
+    - loop_ratio
+    - diversity_score
+
+# ── Human study ────────────────────────────────────────────────────────────────
+human_study:
+  pairs_per_prompt: 3
+  seed: 42
+  conditions_to_compare:
+    - greedy
+    - temp_0.7
+    - temp_1.0
+    - temp_1.5

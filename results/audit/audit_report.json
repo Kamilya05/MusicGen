@@ -1,0 +1,188 @@
+{
+  "prompt": "relaxing ambient electronic music",
+  "model": "facebook/musicgen-small",
+  "duration_s": 10.0,
+  "claim_under_test": "greedy (use_sampling=False) output is identical at any temperature",
+  "verdict": "CONFIRMED \u2014 greedy decoding is temperature-invariant (expected). Temperature does not affect argmax selection; the claim holds.",
+  "audio_outputs_identical": true,
+  "token_outputs_identical": true,
+  "temperatures_tested": [
+    0.7,
+    0.9,
+    1.0,
+    1.2,
+    1.5
+  ],
+  "records": [
+    {
+      "gen_args": {
+        "duration": 10.0,
+        "temperature": 0.7,
+        "use_sampling": false,
+        "top_k": 0,
+        "top_p": 0.0
+      },
+      "audio_hash": "e0eb8686a1c54cc074f5ef8099c3a375",
+      "token_hash": "de2460ce8943693b9046e57703dd12fa",
+      "tokens_codebook0_first20": [
+        1318,
+        66,
+        1895,
+        1895,
+        1146,
+        1146,
+        793,
+        1554,
+        1895,
+        1554,
+        1908,
+        1146,
+        793,
+        1895,
+        1895,
+        1908,
+        1908,
+        289,
+        1895,
+        1895
+      ],
+      "audio_path": "results\\audit\\greedy_t0.70.wav"
+    },
+    {
+      "gen_args": {
+        "duration": 10.0,
+        "temperature": 0.9,
+        "use_sampling": false,
+        "top_k": 0,
+        "top_p": 0.0
+      },
+      "audio_hash": "e0eb8686a1c54cc074f5ef8099c3a375",
+      "token_hash": "de2460ce8943693b9046e57703dd12fa",
+      "tokens_codebook0_first20": [
+        1318,
+        66,
+        1895,
+        1895,
+        1146,
+        1146,
+        793,
+        1554,
+        1895,
+        1554,
+        1908,
+        1146,
+        793,
+        1895,
+        1895,
+        1908,
+        1908,
+        289,
+        1895,
+        1895
+      ],
+      "audio_path": "results\\audit\\greedy_t0.90.wav"
+    },
+    {
+      "gen_args": {
+        "duration": 10.0,
+        "temperature": 1.0,
+        "use_sampling": false,
+        "top_k": 0,
+        "top_p": 0.0
+      },
+      "audio_hash": "e0eb8686a1c54cc074f5ef8099c3a375",
+      "token_hash": "de2460ce8943693b9046e57703dd12fa",
+      "tokens_codebook0_first20": [
+        1318,
+        66,
+        1895,
+        1895,
+        1146,
+        1146,
+        793,
+        1554,
+        1895,
+        1554,
+        1908,
+        1146,
+        793,
+        1895,
+        1895,
+        1908,
+        1908,
+        289,
+        1895,
+        1895
+      ],
+      "audio_path": "results\\audit\\greedy_t1.00.wav"
+    },
+    {
+      "gen_args": {
+        "duration": 10.0,
+        "temperature": 1.2,
+        "use_sampling": false,
+        "top_k": 0,
+        "top_p": 0.0
+      },
+      "audio_hash": "e0eb8686a1c54cc074f5ef8099c3a375",
+      "token_hash": "de2460ce8943693b9046e57703dd12fa",
+      "tokens_codebook0_first20": [
+        1318,
+        66,
+        1895,
+        1895,
+        1146,
+        1146,
+        793,
+        1554,
+        1895,
+        1554,
+        1908,
+        1146,
+        793,
+        1895,
+        1895,
+        1908,
+        1908,
+        289,
+        1895,
+        1895
+      ],
+      "audio_path": "results\\audit\\greedy_t1.20.wav"
+    },
+    {
+      "gen_args": {
+        "duration": 10.0,
+        "temperature": 1.5,
+        "use_sampling": false,
+        "top_k": 0,
+        "top_p": 0.0
+      },
+      "audio_hash": "e0eb8686a1c54cc074f5ef8099c3a375",
+      "token_hash": "de2460ce8943693b9046e57703dd12fa",
+      "tokens_codebook0_first20": [
+        1318,
+        66,
+        1895,
+        1895,
+        1146,
+        1146,
+        793,
+        1554,
+        1895,
+        1554,
+        1908,
+        1146,
+        793,
+        1895,
+        1895,
+        1908,
+        1908,
+        289,
+        1895,
+        1895
+      ],
+      "audio_path": "results\\audit\\greedy_t1.50.wav"
+    }
+  ]
+}

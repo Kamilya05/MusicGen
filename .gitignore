@@ -1,0 +1,16 @@
+.venv
+data/manifests/audio
+data/ultrakill/*.flac
+
+# Generated audio output
+results/sweep_ultrakill/
+results/audit/*.wav
+audio_samples/**/*.wav
+
+# Model checkpoints (large binary files)
+trained_model*/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
